@@ -7,13 +7,22 @@
  \_____|_|  \_\\____/|_____/_____/|_|    \____/ \____/  |_|
 ```
 
-**Prior authorization metrics — CY2025 (CMS-0057-F)**
+**Democratizing publicly funded healthcare data**
 
-Crossfoot is a crawled, normalized, and **validated** dataset of the plan-level
-prior authorization disclosures US health plans are required to publish under
-CMS-0057-F. Every row is traced to the payer's or state agency's own document,
-and every rate is computed in code from extracted counts — never taken from a
-percentage the payer printed.
+Crossfoot's mission is to democratize publicly funded healthcare data. US law
+requires health plans and public programs to disclose a great deal about how the
+system actually runs, and most of it lands scattered across payer websites in
+formats nobody reads. Crossfoot draws on that legislatively mandated reporting
+and other publicly available data and turns it into datasets anyone can check
+and use — no middleman between the public and its own data — putting light into
+the industry's dark corners so ideas for better care at the best cost can stand
+on numbers.
+
+It starts with prior authorization denials: a crawled, normalized, and
+**validated** dataset of the plan-level disclosures US health plans are required
+to publish under CMS-0057-F (CY2025). Every row is traced to the payer's or
+state agency's own document, and every rate is computed in code from extracted
+counts — never taken from a percentage the payer printed.
 
 This repository holds a working example of it: the document harvester, this
 documentation, and the ten filings that reported more denials than any others in
@@ -82,8 +91,3 @@ python3 tools/harvest.py --list tools/unread.txt
 
 Runs on a Mac. Needs `openpyxl` for spreadsheets and `poppler` (`pdftotext`,
 `pdftoppm`) for PDFs; Chrome is found automatically for client-rendered pages.
-
-
-## Comprehensive data set
-
-To compile a more comprehensive data set, run the crawlers on your own infrastructure or inquire at https://ryangomez.nyc
