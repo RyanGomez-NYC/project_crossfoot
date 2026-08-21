@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.zip
+
+# Private working notes. This repository is public; these files are not.
+CLAUDE.md
+.claude/
+*.local.md
+
+# Everything merge.py, build.py, gaps.py, render.py and export_xlsx.py produce.
+# All of it rebuilds from the committed segments in about a second.
+data/merged_filings.json
+data/merged_failures.json
+data/merge_conflicts.json
+out/

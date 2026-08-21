@@ -1,0 +1,35 @@
+# Documents recorded as blocked that a browser, a spreadsheet reader or a pair of
+# eyes can still get at. Run:  python3 tools/harvest.py --list tools/unread.txt
+#
+# --- spreadsheets: the numbers are already machine-readable ------------------
+# MetroPlus Health, seven New York filings. The wildcard in the recorded gap has
+# to be resolved first: open metroplus.org/prior-authorization-metrics and copy
+# the seven real .xlsx URLs in here.
+https://www.dentaquest.com/content/dam/dentaquest/en/interoperability-api/ok-soonerselect-cms-interoperability-and-prior-authorization-metrics.xlsx.coredownload.inline.xlsx
+
+# --- scans: no text layer, but legible -------------------------------------
+https://www.wellsense.org/hubfs/About/Interoperability/Prior_Auth_Report_CY2025_MassHealth.pdf
+https://www.wellsense.org/hubfs/About/Interoperability/Prior_Auth_Report_CY2025_MA_Clarity.pdf
+https://www.wellsense.org/hubfs/About/Interoperability/Prior_Auth_Report_CY2025_NH_Clarity.pdf
+https://www.wellsense.org/hubfs/About/Interoperability/Prior_Auth_Report_CY2025_NH_Medicaid.pdf
+https://www.wellsense.org/hubfs/About/Interoperability/Prior_Auth_Report_CY2025_NH_Medicare.pdf
+
+# --- client-rendered: the document exists, a static fetch never sees it ------
+# These need --client on the command line, or they will be fetched as HTML and
+# you will get the same empty shell the crawler got.
+https://chc.upmchealthplan.com/en/members/documents-resources/
+https://www.upmchealthplan.com/en/medicare/documents-and-forms
+https://allcarehealth.com/medicaid/allcare-cco-prior-authorization-metrics
+https://www.allcarehealth.com/medicare-overview/allcare-advantage-2026/allcare-advantage-prior-authorization-metrics
+https://www.denverhealthmedicalplan.org/for-providers/prior-authorizations
+https://www.in.gov/medicaid/providers/clinical-services/prior-authorization/prior-authorization-metrics-reporting/
+https://fcchealthplan.com/
+https://provider.humana.com/coverage-claims/prior-authorizations/prior-authorization-metrics
+
+# --- charts, not tables ------------------------------------------------------
+# Rhode Island EOHHS and Jefferson Health Plans publish their CY2025 metrics as
+# pictures of bar charts. Harvest them if you like, but do not transcribe numbers
+# off a chart — a value read off a bar is a guess, and a guess that reconciles is
+# worse than no row at all. These stay recorded as gaps on purpose.
+# https://eohhs.ri.gov/reference-center/prior-authorization-annual-report
+# https://www.jeffersonhealthplans.com/home/about-us/interoperability/prior-auth-reporting
