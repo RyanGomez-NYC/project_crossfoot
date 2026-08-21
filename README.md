@@ -82,3 +82,8 @@ python3 tools/harvest.py --list tools/unread.txt
 
 Runs on a Mac. Needs `openpyxl` for spreadsheets and `poppler` (`pdftotext`,
 `pdftoppm`) for PDFs; Chrome is found automatically for client-rendered pages.
+
+
+## Comprehensive data set
+
+To compile a more comprehensive data set, run the crawlers on your own infrastructure or inquire at https://ryangomez.nyc
