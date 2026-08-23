@@ -24,9 +24,9 @@ to publish under CMS-0057-F (CY2025). Every row is traced to the payer's or
 state agency's own document, and every rate is computed in code from extracted
 counts — never taken from a percentage the payer printed.
 
-This repository holds a working example of it: the document harvester, this
-documentation, and the ten filings that reported more denials than any others in
-the full 536-filing dataset.
+This repository holds the code — the crawlers, the models, the data processors
+and the data exporters — together with a working example: the ten filings that
+reported more denials than any others in the full 536-filing dataset.
 
 ## What's here
 
@@ -35,9 +35,64 @@ data/filings_top10.json          the ten filings as extracted — one raw record
 data/pa_metrics_top10.csv        the same ten, normalized — computed rates, quality flags
 examples/pa_metrics_top10.xlsx   formatted workbook, two sheets: Metrics and Validation
 
+filings/                         the CMS-0057-F prior-authorization pipeline
+pipeline/prices/                 the hospital price transparency pipeline, crawler included
+analysis/                        the county-level models
+scripts/                         crawlers for what the main crawl could not read
+
 tools/harvest.py                 turns documents a crawler cannot read into artifacts a reader can
 tools/unread.txt                 the queue of such documents, by kind
 ```
+
+## The code
+
+```
+filings/            CY2025 prior-authorization filings (CMS-0057-F)
+  normalize.py        raw collector segments -> one flat schema
+  merge.py            dedupe overlapping collector segments
+  validate.py         consistency rules; disagreements become findings
+  gaps.py             classify coverage gaps (blocked / missing / etc.)
+  build.py            build the published CSV + validation report
+  export_xlsx.py      formatted workbook for Excel / Power BI
+  render.py           self-contained HTML page of the dataset
+
+pipeline/prices/    hospital price transparency (machine-readable files)
+  sources.py          the seed list of hospitals and their MRF locations
+  fetch.py            the crawler: fetch, retry, provenance hashes
+  mrf.py              parse CMS Hospital Price Transparency files
+  codes.py            procedure code handling
+  medicare.py         Medicare reference prices
+  counties.py         county-level assembly
+  enrich.py           join external covariates
+  basket.py           the fixed basket of shoppable services
+  validate.py         consistency checks on extracted prices
+  xlsx.py             minimal xlsx reader/writer (stdlib only)
+  build.py            orchestrates the whole prices pipeline
+  selftest.py         self-tests for the above
+
+analysis/           models
+  county_models.py    county-level models (ridge + gradient boosting)
+
+scripts/            crawlers for what the main crawl could not read
+  harvest_large.py    stream-parse price files too large to load in memory
+  recover_browser.py  fetch from TLS-walled hosts with a browser profile
+  recover_manual.py   hand-seeded recoveries for hosts needing special cases
+  recover_ca06.py     one specific recovery kept for the record
+```
+
+`pipeline/prices` is a package: run it as `python3 -m pipeline.prices.build`
+from the repository root. The `scripts/` crawlers put the repository root on
+`sys.path` themselves and write under `out/` and `data/raw/`. The `filings/`
+stage scripts are plain scripts run from inside `filings/`; they expect the
+raw collector segments in `../data/`, of which this repository carries the
+top-ten sample.
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+Only `analysis/`, `filings/export_xlsx.py`, and the `scripts/` crawlers need
+third-party packages; the two pipelines themselves are standard library.
 
 ## The ten filings
 

@@ -1,0 +1,13 @@
+# analysis/county_models.py
+numpy>=1.26
+pandas>=2.0
+scikit-learn>=1.4
+
+# filings/export_xlsx.py and tools/harvest.py (spreadsheet extraction)
+openpyxl>=3.1
+
+# scripts/harvest_large.py and the recovery scripts (streaming JSON parse)
+ijson>=3.2
+
+# scripts/recover_browser.py only (browser TLS profile for walled hosts)
+curl_cffi>=0.7
