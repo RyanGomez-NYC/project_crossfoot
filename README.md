@@ -72,6 +72,9 @@ pipeline/prices/    hospital price transparency (machine-readable files)
 
 analysis/           models
   county_models.py    county-level models (ridge + gradient boosting)
+  hospital_models.py  the hospital fair-price index (two-way fixed effects)
+                      and estimates for unpublished prices (low-rank matrix
+                      completion, graded on held-out cells)
 
 scripts/            crawlers for what the main crawl could not read
   harvest_large.py    stream-parse price files too large to load in memory
