@@ -97,9 +97,16 @@ document.
    └──────────────────────┬──────────────────────┘
                           ▼
    ┌─────────────────────────────────────────────┐
-   │  TRANSCRIBE   AI agents read the artifacts  │  counts copied exactly as
-   │               and copy out the counts       │  printed — and only counts;
-   │                                             │  never a rate, never a guess
+   │  PARSE      preauth/extract.py              │  where a payer stamped one
+   │                                             │  layout across forty filings,
+   │                                             │  a template read once turns
+   │                                             │  all forty into records
+   └──────────────────────┬──────────────────────┘
+                          ▼
+   ┌─────────────────────────────────────────────┐
+   │  TRANSCRIBE  AI agents read what no         │  counts copied exactly as
+   │              template fits, and copy out    │  printed — and only counts;
+   │              the counts                     │  never a rate, never a guess
    └──────────────────────┬──────────────────────┘
                           ▼
    ┌─────────────────────────────────────────────┐
@@ -123,6 +130,15 @@ The division of labor is the whole method: **AI agents read and transcribe;
 code does the arithmetic.** A model never computes a rate, and code never
 guesses at a number a document did not print.
 
+A template in `preauth/extract.py` is added only after its layout has been read
+by eye and confirmed regular, and it is held to the same standard as a model:
+anything it cannot find comes back as null, never as zero. A payer that
+published no appeal counts and a payer that received no appeals are different
+claims, and only one of them is interesting. Where a parser's reading fails the
+payer's own printed total, the row is held back for a human rather than
+published — which is also what makes OCR safe to use at all: a misread digit
+breaks the arithmetic, so the check is a real test of the reading.
+
 ## The rules the work lives by
 
 1. **Every figure traces to a source.** Each number carries the URL and a
@@ -143,6 +159,34 @@ guesses at a number a document did not print.
    be trusted rather than checked.
 6. **The pipeline is public.** This repository. Rerun the work, or point the
    same machinery at data nobody has read yet.
+7. **The crawler says what it is.** `pipeline/preauth/` sends
+   `Mozilla/5.0 (compatible; Crossfoot/1.0; +https://ryangomez.nyc/crossfoot)` —
+   the declared-robot convention, a name and a URL a webmaster can look up. It
+   does not pretend to be a browser, and it does not route around a payer that
+   turns it away. Being refused is data.
+
+### What that costs, measured
+
+Of the 159 hosts this project has successfully fetched a disclosure from, **152
+serve the identifying agent exactly as they serve a browser.** Three do not, and
+all three are Elevance — `anthem.com`, `anthembluecross.com`, `wellpoint.com`.
+They do not refuse it. They accept the connection and hold it open until it
+times out, every time, while the same request carrying a browser string comes
+back in under a second.
+
+A crawler wearing a browser string would never have found that out, and the
+stall would appear in the data as a network fault rather than as a payer
+stalling a declared crawler on a report the law obliges it to publish. So the
+identifying agent stays, the timeout is recorded as a failed fetch, and it ships
+with the rest of the misses under rule 5.
+
+**Two crawlers here have not been converted yet**, and saying so is cheaper than
+being caught: `pipeline/prices/fetch.py` and `tools/harvest.py` still send a
+browser string. They work a different population — hospital price-transparency
+hosts rather than payer websites — and the switch above was only measured
+against payer hosts. Converting them without measuring them first would be
+trading a known dataset for an untested principle, so they wait for the same
+test the preauth crawler got.
 
 ## What's in this repository
 
@@ -156,7 +200,20 @@ project_crossfoot/
 ├── examples/
 │   └── pa_metrics_top10.xlsx     formatted workbook: Metrics + Validation
 │
-├── filings/                      ── CMS-0057-F prior-authorization pipeline ──
+├── pipeline/preauth/             ── CMS-0057-F collection: find and read ──
+│   ├── sources.py                who the rule obliges to publish
+│   ├── universe.py               build that list from CMS + state directories
+│   ├── discover.py               find where a payer published: robots →
+│   │                             sitemaps → learned paths → one hop of links
+│   ├── sweep.py                  breadth-first crawl of a known publisher
+│   ├── docs.py                   fetch a document, keep its bytes + SHA-256
+│   ├── extract.py                read regular layouts into filing records —
+│   │                             ten templates, each written only after the
+│   │                             layout was read by eye and confirmed regular
+│   ├── match.py                  attribute filings to obliged entities
+│   └── mcpar.py                  the CMS MCPAR Medicaid reporting extract
+│
+├── filings/                      ── CMS-0057-F processing pipeline ──
 │   ├── normalize.py              raw collector segments → one flat schema
 │   ├── merge.py                  dedupe overlapping collector segments
 │   ├── validate.py               consistency rules; disagreements → findings
@@ -195,7 +252,10 @@ project_crossfoot/
 │
 └── tools/
     ├── harvest.py                unreadable documents → reviewable artifacts
-    └── unread.txt                the queue of such documents, by kind
+    ├── unread.txt                the queue of such documents, by kind
+    ├── ocr_scanned.py            the disclosures published as pictures:
+    │                             image-only PDFs → text, no installs
+    └── ocr_page.swift            the OCR itself — macOS Vision, ~60 lines
 ```
 
 ## Running it
@@ -218,13 +278,28 @@ python3 -m analysis.hospital_models
 # the harvester
 python3 tools/harvest.py <url> [<url> ...]
 python3 tools/harvest.py --list tools/unread.txt
+
+# the disclosures published as pictures (macOS; compiles the Swift helper
+# on first run, then reads every stored PDF that produced no text)
+python3 tools/ocr_scanned.py            # report what is missing text
+python3 tools/ocr_scanned.py --write    # OCR them and store the text
+
+# collection: who must publish, where they published it, and what it says
+python3 -m pipeline.preauth.universe
+python3 -m pipeline.preauth.discover --domains-file <domains.csv>
+python3 -m pipeline.preauth.docs --list <urls.txt>
+python3 -m pipeline.preauth.extract --list     # templates, and what matches
+python3 -m pipeline.preauth.extract <template>
 ```
 
 Only `analysis/`, `filings/export_xlsx.py`, and the `scripts/` crawlers need
-third-party packages; **the two pipelines themselves are standard library**.
+third-party packages; **the three pipelines themselves are standard library**.
 The harvester runs on a Mac and needs `openpyxl` for spreadsheets and
 `poppler` (`pdftotext`, `pdftoppm`) for PDFs; Chrome is found automatically
-for client-rendered pages.
+for client-rendered pages. `pipeline/preauth/docs.py` prefers `pdftotext` and
+falls back to `pypdf`, so poppler is convenient rather than required — and
+`tools/ocr_scanned.py` needs neither, because a PDF with no text layer has
+nothing for either of them to read.
 
 ## The models, briefly
 
