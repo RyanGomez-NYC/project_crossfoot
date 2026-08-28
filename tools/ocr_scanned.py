@@ -2,7 +2,7 @@
 Read the disclosures that were published as pictures.
 
 A handful of payers post the mandated report as a scanned or image-only PDF --
-no text layer, so docs.py stores the bytes and renders nothing, and the
+no text layer at all, so docs.py stores the bytes and renders nothing, and the
 document drops out of the dataset without ever being counted as a failure. This
 recovers those, using the OCR that ships with macOS (Vision, via
 tools/ocr_page.swift) so nothing new has to be installed.
