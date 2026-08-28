@@ -6,6 +6,12 @@ scikit-learn>=1.4
 # filings/export_xlsx.py and tools/harvest.py (spreadsheet extraction)
 openpyxl>=3.1
 
+# pipeline/preauth/docs.py only, and only as a fallback: it reads PDF text with
+# poppler's pdftotext when that is installed, and falls back to this when it is
+# not. Neither is needed for a PDF with no text layer at all -- see
+# tools/ocr_scanned.py, which uses the OCR built into macOS.
+pypdf>=4.0
+
 # scripts/harvest_large.py and the recovery scripts (streaming JSON parse)
 ijson>=3.2
 
