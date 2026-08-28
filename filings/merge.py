@@ -29,6 +29,15 @@ SEGMENTS = [
     "seg_w3_newengland.json", "seg_w3_ky_nc_ms_ny.json", "seg_w3_blues.json",
     "seg_w3_ma_regional.json", "seg_w3_qhp.json",
     "seg_w3_gaps_a.json", "seg_w3_gaps_b.json",
+    # wave 5 - machine extraction against the CMS reporting template, August 2026.
+    # These come out of pipeline.preauth.extract rather than a collector: the
+    # documents are fetched into data/raw/preauth/docs/ and parsed, so each row
+    # carries the SHA-256 of the bytes it was read from.
+    "seg_w5_humana.json", "seg_w5_cms_template.json", "seg_w5_states.json",
+    "seg_w5_kaiser.json", "seg_w5_anthem.json", "seg_w5_metroplus.json",
+    "seg_w5_blocked.json", "seg_w5_numbered.json", "seg_w5_browser.json",
+    "seg_w5_bulleted.json", "seg_w5_dentaquest.json", "seg_w5_scorecard.json",
+    "seg_w5_sectioned.json", "seg_w5_wellsense.json",
 ]
 
 COVERAGE_CANON = {
