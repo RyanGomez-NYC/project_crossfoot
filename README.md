@@ -391,6 +391,13 @@ account:
    the data, live and free ──►  https://ryangomez.nyc/crossfoot
 ```
 
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE). Use it, fork it, build on it,
+commercially or not. The one thing that must travel with any redistribution
+or derivative is the attribution in the [NOTICE](NOTICE) file, as Section
+4(d) of the license requires: this work is Project Crossfoot, by Ryan Gomez.
+
 ## Contributing
 
 The work is sized for many hands, and no healthcare background is needed —
